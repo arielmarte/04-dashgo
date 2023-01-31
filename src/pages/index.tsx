@@ -1,9 +1,10 @@
-import { Input } from "@/components/Form/Input";
-import { useForm } from "react-hook-form";
-import { Button, Flex, Stack  } from "@chakra-ui/react";
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { SubmitHandler } from "react-hook-form/dist/types";
+import { Flex, Button, Stack, Box } from "@chakra-ui/react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { Input } from "../components/Form/Input";
+import { Logo } from "../components/Header/Logo";
 
 interface SignInFormProps {
   email: string;
@@ -11,31 +12,30 @@ interface SignInFormProps {
 }
 
 const signInFormSchema = yup.object().shape({
-  email: yup.string().required('E-mail obrigatório').email('O campo precisa ser um email válido'),
-  password: yup.string().required('Senha Obrigatória'),
-})
+  email: yup.string().required("E-mail obrigatório").email("O campo precisa ser um email válido"),
+  password: yup.string().required("Senha obrigatória")
+});
 
 export default function SignIn() {
   const { register, handleSubmit, formState } = useForm<SignInFormProps>({
-    resolver: yupResolver(signInFormSchema),
+    resolver: yupResolver(signInFormSchema)
   });
 
-  const handleSignIn: SubmitHandler<SignInFormProps> = async (data, event) => {
+  const handleSignIn: SubmitHandler<SignInFormProps> = async data => {
     await new Promise(resolve => setTimeout(resolve, 1200));
+
     console.log(data);
   };
 
   return (
-    <Flex
-      w="100vw"
-      h="100vh"
-      align="center"
-      justify="center"
-    >
+    <Flex w="100vw" h="100vh" align="center" justify="center">
+      <Box>
+        <Logo />
+      </Box>
       <Flex
-        // as="form"
-        width="100%"
-        maxWidth={360}
+        as="form"
+        w="100%"
+        maxW={360}
         bg="gray.800"
         p="8"
         borderRadius={8}
@@ -43,8 +43,20 @@ export default function SignIn() {
         onSubmit={handleSubmit(handleSignIn)}
       >
         <Stack spacing="4">
-          <Input type="email" label="E-mail" error={formState.errors.email} {...register("email")} />
-          <Input type="password" label="Senha" error={formState.errors.password} {...register("password")} />
+          <Input
+            //name="email"
+            label="E-mail"
+            type="email"
+            error={formState.errors.email}
+            {...register("email")}
+          />
+          <Input
+            //name="password"
+            label="Senha"
+            type="password"
+            error={formState.errors.password}
+            {...register("password")}
+          />
         </Stack>
         <Button
           type="submit"
@@ -56,7 +68,6 @@ export default function SignIn() {
           Entrar
         </Button>
       </Flex>
-    </Flex >
-
-  )
+    </Flex>
+  );
 }
