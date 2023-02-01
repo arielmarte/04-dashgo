@@ -1,31 +1,48 @@
-import Link, { LinkProps } from "next/link"
+import Link, { LinkProps } from "next/link";
 import { useRouter } from "next/router";
-import { cloneElement, ReactElement } from "react"
+import { cloneElement, ReactElement } from "react";
 
-interface ActiveLinkProps extends LinkProps{
-    children: ReactElement
-    shoulMatchExactHref?: boolean
+import { Icon, Link as ChakraLink, Text, LinkProps as ChakraLinkProps } from "@chakra-ui/react";
+
+
+
+import NextLink from 'next/link'
+
+
+interface ActiveLinkProps extends ChakraLinkProps {
+  children: ReactElement;
+  shouldMatchExactHref?: boolean;
 }
 
-export function ActiveLink({children, shoulMatchExactHref = false, ...rest}: ActiveLinkProps){
-    const {asPath } = useRouter();
-    
-    let isActive = false;
+export function ActiveLink({ 
+  children, 
+  shouldMatchExactHref = false, 
+  ...rest 
+}: ActiveLinkProps) {
+  const { asPath } = useRouter()
 
-    if(shoulMatchExactHref && (asPath === rest.href || asPath === rest.as)){
-        isActive = true;
-    }
+  let isActive = false;
 
-    if (!shoulMatchExactHref && (asPath.startsWith(String(rest.href)) || asPath.startsWith(String(rest.as)))){
-        isActive = true;
-    }
+  if (shouldMatchExactHref && (asPath === rest.href || asPath === rest.as)) {
+    isActive = true;
+  }
 
-    return(
-        <Link {...rest}>
-            {cloneElement(children, {
-                color: isActive ? 'pink.400' : 'gray.50'
-            })}
+  if (!shouldMatchExactHref && 
+    (asPath.startsWith(String(rest.href)) || 
+     asPath.startsWith(String(rest.as)))) {
+       isActive = true;
+     }
 
-        </Link>
-    )
+  return (
+    <>
+    </>
+
+
+    // <ChakraLink as={NextLink} href={String(rest.href)} {...rest}>
+    //   {cloneElement(children, { 
+    //     color: isActive ? 'pink.400' : 'gray.50'
+    //   })}
+    // </ChakraLink>
+  )
 }
+
