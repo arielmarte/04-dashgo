@@ -1,4 +1,5 @@
-import { createServer, Model } from 'miragejs'
+import { createServer, Factory, Model } from 'miragejs'
+import { faker } from '@faker-js/faker';
 
 type User = {
     name: string;
@@ -6,18 +7,43 @@ type User = {
     created_at: string;
 }
 
-export function makeServer(){
+export function makeServer() {
     const server = createServer({
-        models:{
+        models: {
             user: Model.extend<Partial<User>>({})
 
         },
 
-        routes(){
+        factories: {
+            user: Factory.extend({
+                name(i: number) {
+                    return `User ${i+1}`;
+                },
+                email() {
+                    return faker.internet.email().toLowerCase();
+                },
+                createdAt(){
+                    return faker.date.recent(10)
+                },
+            })
+        },
+
+        seeds(server){
+            server.createList('user', 10)
+        },
+
+        routes() {
+            this.namespace = 'api';
+            this.timing = 750;
+
             this.get('/users');
+            this.post('/users');
+
+            this.namespace =''; // Pois existe a pasta API do Next
+            this.passthrough(); // Passar para rota original (documentação do mirage)
         }
     })
 
-
+    return server;
 }
 
