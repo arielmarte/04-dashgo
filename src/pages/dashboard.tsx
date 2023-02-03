@@ -4,9 +4,12 @@ import dynamic from 'next/dynamic';
 import { Header } from "../components/Header";
 import { Sidebar } from "../components/Sidebar";
 
+
+
 const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
 })
+
 
 const options: ApexOptions = {
   colors: [theme.colors.pink[500]],
@@ -62,6 +65,8 @@ const series = [
 ]
 
 export default function Dashboard() {
+
+
   return (
     <Flex direction="column" h="100vh">
       <Header />
@@ -79,7 +84,7 @@ export default function Dashboard() {
             pb="4"
           >
             <Text fontSize="lg" mb="4">Incritos da semana</Text>
-            <Chart options={options} series={series} type="area" height={160} width={"100%"} />
+            <Chart options={options} series={series} type="area" height={160} width={"80%"} />
           </Box>
           <Box
             p={["6", "8"]}
@@ -88,7 +93,7 @@ export default function Dashboard() {
             pb="4"
           >
             <Text fontSize="lg" mb="4">Taxa de abertura</Text>
-             <Chart options={options} series={series} type="area" height={160} width={"100%"} /> 
+             <Chart options={options} series={series} type="area" height={160} width={"80%"} /> 
           </Box>
         </SimpleGrid>
       </Flex>

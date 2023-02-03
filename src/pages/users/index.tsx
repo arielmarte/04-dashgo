@@ -1,51 +1,21 @@
 import NextLink from "next/link";
 import { Box, Button, Checkbox, Flex, Heading, Icon, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useBreakpointValue } from "@chakra-ui/react";
 import { RiAddLine } from "react-icons/ri";
-import { useQuery } from "react-query";
 
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { Sidebar } from "../../components/Sidebar";
-import { JSXElementConstructor, Key, ReactElement, ReactFragment, ReactPortal, useEffect } from "react";
-
-type User = {
-  name: string;
-  email: string;
-  created_at: string;
-}
+import { useUsers } from "../../services/hooks/useUsers";
+import { useState } from "react";
 
 export default function UserList() {
-
-  const { data, isLoading, error } = useQuery('users', async () => {
-    const response = await fetch('http://localhost:3000/api/users')
-    const data = await response.json()
-
-    const users = data.users.map((user: { id: any; name: any; email: any; createdAt: string | number | Date; }) => {
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createdAt: new Date(user.createdAt).toLocaleDateString('pt-BR', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        })
-      };
-    });
-
-    return users;
-  }, {
-    staleTime: 1000 * 5
-  }
-  
-
-  )
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isFetching, error } = useUsers(page)
 
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
   })
-
 
 
   return (
@@ -57,7 +27,9 @@ export default function UserList() {
 
         <Box flex="1" borderRadius={8} bg="gray.800" p="8">
           <Flex mb="8" justify="space-between" align="center">
-            <Heading size="lg" fontWeight="normal">Usuários</Heading>
+            <Heading size="lg" fontWeight="normal">Usuários
+            {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4"/>}
+            </Heading>
 
 
             <Button
@@ -73,7 +45,7 @@ export default function UserList() {
 
           </Flex>
 
-          {isLoading ? (
+          { isLoading ? (
             <Flex justify="center">
               <Spinner />
             </Flex>
@@ -90,12 +62,11 @@ export default function UserList() {
                       <Checkbox colorScheme="pink" />
                     </Th>
                     <Th>Usuário</Th>
-                    {isWideVersion && <Th>Data de cadastro</Th>}
+                    { isWideVersion && <Th>Data de cadastro</Th> }
                   </Tr>
                 </Thead>
                 <Tbody>
-
-                {data.map((user: { id: Key | null | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; email: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; createdAt: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; }) => {
+                  {data!.users.map(user => {
                     return (
                       <Tr key={user.id}>
                         <Td px={["4", "4", "6"]}>
@@ -111,14 +82,14 @@ export default function UserList() {
                       </Tr>
                     )
                   })}
-
-
-
-
                 </Tbody>
               </Table>
 
-              <Pagination />
+              <Pagination
+                totalCountOfRegisters={Number(data!.totalCount)}
+                currentPage={page}
+                onPageChange={setPage}
+              />
             </>
           )}
         </Box>
@@ -126,6 +97,3 @@ export default function UserList() {
     </Box>
   );
 }
-
-
-
